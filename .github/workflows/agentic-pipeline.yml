@@ -1,0 +1,54 @@
+name: Agentic Pipeline
+
+# How often the agents build:
+#   • on a schedule (cron below), and
+#   • on demand via the "Run workflow" button (workflow_dispatch).
+# Each run creates a run/<id> branch and opens a PR (Coder), with the Tester
+# and Reviewer posting status checks + a review. PRs are left OPEN for a human
+# to merge (deterministic agents would otherwise pile up identical merges).
+on:
+  workflow_dispatch:
+  schedule:
+    # Every Monday at 09:00 UTC. Change this cron to adjust the cadence.
+    - cron: "0 9 * * 1"
+
+# Least-privilege token: enough to push a branch, open a PR, and post checks.
+permissions:
+  contents: write
+  pull-requests: write
+  statuses: write
+
+concurrency:
+  group: agentic-pipeline
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Use the gh credential helper for pushes (set in GitHubService),
+          # not a persisted extraheader.
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install "pydantic>=2.6"
+
+      - name: Configure git identity
+        run: |
+          git config user.name "agentic-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Run the autonomous pipeline (opens a PR)
+        run: |
+          python -m orchestrator.run \
+            --github --live --no-merge \
+            --repo "${{ github.repository }}" \
+            --run "gh-${{ github.run_number }}"
