@@ -104,7 +104,8 @@ class Orchestrator:
                 if state.is_complete:
                     state.record_transition(Stage.DONE, self.reviewer.name,
                                             "tester + reviewer approved")
-                    self._gh_merge(state)
+                    self.state.save(state)
+                    self._gh_finalize_and_merge(state)
                 else:
                     self._reject_to_coder(state, self.reviewer.name,
                                           "reviewer requested changes")
@@ -137,6 +138,7 @@ class Orchestrator:
     def _gh_planner(self, state: RunState) -> None:
         if not self.github:
             return
+        self.state.save(state)  # persist current flags before committing them
         self.github.commit_paths(
             [self._pipeline_dir(state)],
             f"run {state.run_id}: planner artifacts (idea, spec, tasks)",
@@ -145,6 +147,7 @@ class Orchestrator:
     def _gh_coder(self, state: RunState) -> None:
         if not self.github:
             return
+        self.state.save(state)
         gh = self.github
         gh.commit_paths(
             [self._pipeline_dir(state), "src"],
@@ -163,6 +166,7 @@ class Orchestrator:
     def _gh_tester(self, state: RunState, approved: bool) -> None:
         if not self.github:
             return
+        self.state.save(state)
         gh = self.github
         sha = gh.commit_paths(
             [self._pipeline_dir(state), "tests"],
@@ -181,6 +185,7 @@ class Orchestrator:
     ) -> None:
         if not self.github or state.pr_number is None:
             return
+        self.state.save(state)
         gh = self.github
         sha = gh.commit_paths(
             [self._pipeline_dir(state)],
@@ -200,10 +205,20 @@ class Orchestrator:
         body = verdict + "\n\n" + ("\n".join(result.messages) or "Automated review.")
         gh.post_review(state.pr_number, "COMMENT", body)
 
-    def _gh_merge(self, state: RunState) -> None:
-        if not self.github or state.pr_number is None:
+    def _gh_finalize_and_merge(self, state: RunState) -> None:
+        if not self.github:
             return
-        self.github.merge_pr(state.pr_number)
+        gh = self.github
+        # Commit the FINAL status.json (now DONE) onto the branch before merging,
+        # so the merged history reflects the completed run — not the mid-flight
+        # REVIEWING snapshot captured during the reviewer's commit.
+        gh.commit_paths(
+            [f"{self._pipeline_dir(state)}/status.json"],
+            f"run {state.run_id}: finalize (DONE)",
+        )
+        gh.push(state.branch or gh.run_branch(state.run_id))
+        if state.pr_number is not None:
+            gh.merge_pr(state.pr_number)
 
     def _pr_body(self, state: RunState) -> str:
         lines = [
