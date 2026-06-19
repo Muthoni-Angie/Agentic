@@ -28,6 +28,7 @@ DEFAULT_REPO = "Muthoni-Angie/Agentic"
 def build_orchestrator(
     project_root: Path = PROJECT_ROOT,
     github: GitHubService | None = None,
+    auto_merge: bool = True,
 ) -> Orchestrator:
     """Composition root — the single place dependencies are wired."""
     pipeline_root = project_root / ".pipeline"
@@ -48,6 +49,7 @@ def build_orchestrator(
         tester=TesterAgent(*deps),
         reviewer=ReviewerAgent(*deps),
         github=github,
+        auto_merge=auto_merge,
     )
 
 
@@ -63,13 +65,18 @@ def main() -> None:
                              "--github only logs the commands it would run")
     parser.add_argument("--repo", default=DEFAULT_REPO,
                         help=f"target GitHub repo (default: {DEFAULT_REPO})")
+    parser.add_argument("--no-merge", action="store_true",
+                        help="open/update the PR but do not merge it "
+                             "(leave it for human review)")
     args = parser.parse_args()
 
     github = None
     if args.github:
         github = GitHubService(args.repo, PROJECT_ROOT, live=args.live)
 
-    orchestrator = build_orchestrator(github=github)
+    orchestrator = build_orchestrator(
+        github=github, auto_merge=not args.no_merge
+    )
     state = orchestrator.run(args.run_id)
 
     print(f"\nRun {state.run_id} finished in stage: {state.stage.value}")

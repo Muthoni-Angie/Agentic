@@ -42,6 +42,7 @@ class Orchestrator:
         reviewer: BaseAgent,
         max_iterations: int = 5,
         github: GitHubService | None = None,
+        auto_merge: bool = True,
     ) -> None:
         self.state = state_service
         self.planner = planner
@@ -50,6 +51,7 @@ class Orchestrator:
         self.reviewer = reviewer
         self.max_iterations = max_iterations
         self.github = github
+        self.auto_merge = auto_merge
 
     def start(self, run_id: str | None = None) -> RunState:
         return self.state.create_run(run_id)
@@ -217,7 +219,7 @@ class Orchestrator:
             f"run {state.run_id}: finalize (DONE)",
         )
         gh.push(state.branch or gh.run_branch(state.run_id))
-        if state.pr_number is not None:
+        if state.pr_number is not None and self.auto_merge:
             gh.merge_pr(state.pr_number)
 
     def _pr_body(self, state: RunState) -> str:
