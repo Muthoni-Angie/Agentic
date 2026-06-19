@@ -43,6 +43,7 @@ class Orchestrator:
         max_iterations: int = 5,
         github: GitHubService | None = None,
         auto_merge: bool = True,
+        roadmap=None,
     ) -> None:
         self.state = state_service
         self.planner = planner
@@ -52,6 +53,7 @@ class Orchestrator:
         self.max_iterations = max_iterations
         self.github = github
         self.auto_merge = auto_merge
+        self.roadmap = roadmap
 
     def start(self, run_id: str | None = None) -> RunState:
         return self.state.create_run(run_id)
@@ -62,6 +64,10 @@ class Orchestrator:
             state = self.start(run_id)
 
         self.logs: list[StepLog] = []
+
+        # The feature this run is building (roadmap mode). Captured up-front so
+        # marking it done at the end is unambiguous even if state advances.
+        self._feature = self.roadmap.current_feature() if self.roadmap else None
 
         if self.github and state.branch is None:
             state.branch = self.github.ensure_run_branch(state.run_id)
@@ -107,6 +113,8 @@ class Orchestrator:
                     state.record_transition(Stage.DONE, self.reviewer.name,
                                             "tester + reviewer approved")
                     self.state.save(state)
+                    if self.roadmap and self._feature:
+                        self.roadmap.mark_done(self._feature.id)
                     self._gh_finalize_and_merge(state)
                 else:
                     self._reject_to_coder(state, self.reviewer.name,
@@ -213,11 +221,12 @@ class Orchestrator:
         gh = self.github
         # Commit the FINAL status.json (now DONE) onto the branch before merging,
         # so the merged history reflects the completed run — not the mid-flight
-        # REVIEWING snapshot captured during the reviewer's commit.
-        gh.commit_paths(
-            [f"{self._pipeline_dir(state)}/status.json"],
-            f"run {state.run_id}: finalize (DONE)",
-        )
+        # REVIEWING snapshot captured during the reviewer's commit. In roadmap
+        # mode also commit roadmap.json so merging the PR advances the backlog.
+        paths = [f"{self._pipeline_dir(state)}/status.json"]
+        if self.roadmap:
+            paths.append("roadmap.json")
+        gh.commit_paths(paths, f"run {state.run_id}: finalize (DONE)")
         gh.push(state.branch or gh.run_branch(state.run_id))
         if state.pr_number is not None and self.auto_merge:
             gh.merge_pr(state.pr_number)

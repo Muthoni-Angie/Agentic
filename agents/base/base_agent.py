@@ -31,11 +31,15 @@ class BaseAgent(ABC):
         context_service: ContextService,
         src_dir: Path,
         tests_dir: Path,
+        roadmap=None,
     ) -> None:
         self._artifacts = artifact_service
         self._context = context_service
         self.src_dir = Path(src_dir)
         self.tests_dir = Path(tests_dir)
+        # Optional RoadmapService. When present, agents build the current
+        # backlog feature; when None they fall back to their default behaviour.
+        self.roadmap = roadmap
 
     # ---- BaseAgent contract -------------------------------------------- #
     def read_context(self, run_id: str) -> AgentContext:

@@ -14,6 +14,7 @@ from models.artifact import (
     Task,
     TaskArtifact,
 )
+from product.backlog import PRODUCT_NAME, PRODUCT_PITCH
 from services.context_service import AgentContext
 
 from agents.base.base_agent import BaseAgent
@@ -23,6 +24,66 @@ class PlannerAgent(BaseAgent):
     name = "planner"
 
     def execute(self, context: AgentContext) -> AgentResult:
+        if self.roadmap is not None and self.roadmap.current_feature() is not None:
+            return self._execute_roadmap(context)
+        return self._execute_default(context)
+
+    # ---- roadmap mode: pick the next backlog feature ------------------- #
+    def _execute_roadmap(self, context: AgentContext) -> AgentResult:
+        run_id = context.run_id
+        feature = self.roadmap.current_feature()
+
+        idea = IdeaArtifact(
+            run_id=run_id,
+            created_by=self.name,
+            name=PRODUCT_NAME,
+            pitch=PRODUCT_PITCH,
+            problem="Reconciliation is manual, slow and error-prone for SMBs.",
+            target_market="SMBs running multiple payment rails.",
+            revenue_streams=["Per-seat SaaS", "Usage-based reconciliation fees"],
+            scale_potential="Built incrementally, one feature per pipeline run.",
+        )
+        spec = SpecArtifact(
+            run_id=run_id,
+            created_by=self.name,
+            overview=f"This run builds feature {feature.id}: {feature.title}. "
+            f"{feature.summary}",
+            architecture="A small, composable Python package (`ledgerloop`) "
+            "grown feature by feature.",
+            components=sorted(feature.source_files.keys()),
+            requirements=list(feature.spec_points),
+            non_functional=["Deterministic", "Fully unit-tested", "Strongly typed"],
+        )
+        tasks = TaskArtifact(
+            run_id=run_id,
+            created_by=self.name,
+            tasks=[Task(id=feature.id, title=feature.title,
+                        description=feature.summary)],
+        )
+
+        # The roadmap itself is an artifact — the Planner's living plan.
+        roadmap_md = self.roadmap.render_markdown(current_id=feature.id)
+        self._artifacts.write_markdown(run_id, "roadmap.md", roadmap_md)
+
+        artifacts = [
+            self.write_artifact(idea),
+            self.write_artifact(spec),
+            self.write_artifact(tasks),
+            "roadmap.md",
+        ]
+        return AgentResult(
+            agent=self.name,
+            success=True,
+            artifacts=artifacts,
+            messages=[
+                f"Roadmap: building {feature.id} — {feature.title}.",
+                f"Next up after this: see roadmap.md "
+                f"({len(self.roadmap.backlog)} features total).",
+            ],
+        )
+
+    # ---- default mode (no roadmap) ------------------------------------- #
+    def _execute_default(self, context: AgentContext) -> AgentResult:
         run_id = context.run_id
 
         idea = IdeaArtifact(

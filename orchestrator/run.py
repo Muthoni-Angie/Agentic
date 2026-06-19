@@ -14,9 +14,11 @@ from agents.coder.agent import CoderAgent
 from agents.planner.agent import PlannerAgent
 from agents.reviewer.agent import ReviewerAgent
 from agents.tester.agent import TesterAgent
+from product.backlog import BACKLOG
 from services.artifact_service import ArtifactService
 from services.context_service import ContextService
 from services.github_service import GitHubService
+from services.roadmap_service import RoadmapService
 from services.state_service import StateService
 
 from orchestrator.orchestrator import Orchestrator
@@ -40,8 +42,9 @@ def build_orchestrator(
     context_service = ContextService(
         artifact_service, state_service, project_root, src_dir
     )
+    roadmap = RoadmapService(project_root / "roadmap.json", BACKLOG)
 
-    deps = (artifact_service, context_service, src_dir, tests_dir)
+    deps = (artifact_service, context_service, src_dir, tests_dir, roadmap)
     return Orchestrator(
         state_service=state_service,
         planner=PlannerAgent(*deps),
@@ -50,6 +53,7 @@ def build_orchestrator(
         reviewer=ReviewerAgent(*deps),
         github=github,
         auto_merge=auto_merge,
+        roadmap=roadmap,
     )
 
 
@@ -77,8 +81,11 @@ def main() -> None:
     orchestrator = build_orchestrator(
         github=github, auto_merge=not args.no_merge
     )
+    feature = orchestrator.roadmap.current_feature() if orchestrator.roadmap else None
     state = orchestrator.run(args.run_id)
 
+    if feature:
+        print(f"\nBuilt roadmap feature: {feature.id} — {feature.title}")
     print(f"\nRun {state.run_id} finished in stage: {state.stage.value}")
     print(f"  tester_approved={state.tester_approved} "
           f"reviewer_approved={state.reviewer_approved} "

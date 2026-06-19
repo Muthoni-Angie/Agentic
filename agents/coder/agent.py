@@ -74,6 +74,42 @@ class CoderAgent(BaseAgent):
     name = "coder"
 
     def execute(self, context: AgentContext) -> AgentResult:
+        if self.roadmap is not None and self.roadmap.current_feature() is not None:
+            return self._execute_roadmap(context)
+        return self._execute_default(context)
+
+    # ---- roadmap mode: implement the current feature ------------------- #
+    def _execute_roadmap(self, context: AgentContext) -> AgentResult:
+        run_id = context.run_id
+        feature = self.roadmap.current_feature()
+
+        written = [
+            self._write_source(path, content)
+            for path, content in feature.source_files.items()
+        ]
+        rel = sorted(f"src/{p}" for p in feature.source_files)
+
+        impl = ImplementationArtifact(
+            run_id=run_id,
+            created_by=self.name,
+            summary=f"Implemented {feature.id} ({feature.title}): {feature.summary}",
+            files_changed=rel,
+            decisions=["Built strictly from the spec for this feature.",
+                       "Package-relative imports; small composable modules."],
+            addressed_tasks=[feature.id],
+        )
+        artifact = self.write_artifact(impl)
+        return AgentResult(
+            agent=self.name,
+            success=True,
+            artifacts=[artifact],
+            files_written=written,
+            messages=[f"Built {feature.id} ({feature.title}): "
+                      f"{len(rel)} file(s) — {', '.join(rel)}."],
+        )
+
+    # ---- default mode (no roadmap) ------------------------------------- #
+    def _execute_default(self, context: AgentContext) -> AgentResult:
         run_id = context.run_id
 
         source_path = self._write_source("reconcile.py", _MATCHER_SOURCE)

@@ -60,6 +60,59 @@ class TesterAgent(BaseAgent):
     name = "tester"
 
     def execute(self, context: AgentContext) -> AgentResult:
+        if self.roadmap is not None and self.roadmap.current_feature() is not None:
+            return self._execute_roadmap(context)
+        return self._execute_default(context)
+
+    # ---- roadmap mode: test the current feature ------------------------ #
+    def _execute_roadmap(self, context: AgentContext) -> AgentResult:
+        run_id = context.run_id
+        feature = self.roadmap.current_feature()
+        implementation = context.artifact("implementation.md")
+
+        written = [
+            self._write_test(path, content)
+            for path, content in feature.test_files.items()
+        ]
+        rel = sorted(f"tests/{p}" for p in feature.test_files)
+        cases = [
+            TestCase(name=f"tests for {feature.id}", kind="unit",
+                     covers=feature.title)
+        ]
+
+        defects: list[Defect] = []
+        if not implementation:
+            defects.append(Defect(id="D1", severity="blocker",
+                                  summary="No implementation found to test."))
+
+        plan = TestPlanArtifact(
+            run_id=run_id,
+            created_by=self.name,
+            approach=f"Unit tests for feature {feature.id} ({feature.title}), "
+            "covering happy paths and edge cases.",
+            cases=cases,
+            files_changed=rel,
+        )
+        defect_report = DefectArtifact(
+            run_id=run_id, created_by=self.name, defects=defects
+        )
+        artifacts = [self.write_artifact(plan), self.write_artifact(defect_report)]
+        approved = not defect_report.has_blockers
+
+        return AgentResult(
+            agent=self.name,
+            success=True,
+            approved=approved,
+            artifacts=artifacts,
+            files_written=written,
+            messages=[
+                f"Wrote tests for {feature.id}: {', '.join(rel)}.",
+                "APPROVED" if approved else "REJECTED — missing implementation.",
+            ],
+        )
+
+    # ---- default mode (no roadmap) ------------------------------------- #
+    def _execute_default(self, context: AgentContext) -> AgentResult:
         run_id = context.run_id
 
         implementation = context.artifact("implementation.md")
