@@ -1,0 +1,17 @@
+{
+  "run_id": "gh-2",
+  "created_by": "coder",
+  "created_at": "2026-06-19T18:50:16.306261Z",
+  "summary": "Implemented F1 (Domain models): Define the Transaction and Reconciliation data models.",
+  "files_changed": [
+    "src/ledgerloop/__init__.py",
+    "src/ledgerloop/models.py"
+  ],
+  "decisions": [
+    "Built strictly from the spec for this feature.",
+    "Package-relative imports; small composable modules."
+  ],
+  "addressed_tasks": [
+    "F1"
+  ]
+}
