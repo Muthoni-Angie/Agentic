@@ -46,8 +46,13 @@ class GitHubService:
             cwd=self.root,
             capture_output=True,
             text=True,
-            check=True,
         )
+        if result.returncode != 0:
+            # Surface stderr — otherwise CalledProcessError hides the real cause.
+            raise RuntimeError(
+                f"command failed (exit {result.returncode}): "
+                f"{' '.join(cmd[:4])} …\n{result.stderr.strip() or result.stdout.strip()}"
+            )
         return result.stdout.strip()
 
     def _exec(self, cmd: Sequence[str], *, stub: str = "") -> str:
