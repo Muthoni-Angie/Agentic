@@ -4,6 +4,7 @@ import { ArrowUpRight, GitBranch, Layers, FileStack } from "lucide-react";
 import { getRunSummaries } from "@/lib/pipeline";
 import { StageBadge } from "@/components/StageBadge";
 import { AGENTS } from "@/components/agents";
+import { RunButton } from "@/components/RunButton";
 
 export const dynamic = "force-dynamic";
 
@@ -14,16 +15,19 @@ export default async function DashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       {/* Hero */}
-      <section className="flex flex-col gap-3">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
-          Autonomous Engineering Pipeline
-        </h1>
-        <p className="max-w-2xl text-sm leading-relaxed text-[var(--color-muted)]">
-          Specialized agents collaborate through filesystem artifacts — never
-          directly. Each run flows Planner → Coder → Tester → Reviewer, looping
-          on rejection, and completes only when both the Tester and Reviewer
-          approve.
-        </p>
+      <section className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="flex flex-col gap-3">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Autonomous Engineering Pipeline
+          </h1>
+          <p className="max-w-2xl text-sm leading-relaxed text-[var(--color-muted)]">
+            Specialized agents collaborate through filesystem artifacts — never
+            directly. Each run flows Planner → Coder → Tester → Reviewer, looping
+            on rejection, and completes only when both the Tester and Reviewer
+            approve.
+          </p>
+        </div>
+        <RunButton />
       </section>
 
       {/* Stat cards */}
