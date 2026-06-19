@@ -65,6 +65,13 @@ class RunState(BaseModel):
     iteration: int = 0
     history: list[TransitionRecord] = Field(default_factory=list)
 
+    # GitHub-native fields — populated only when the run is driven through a
+    # GitHubService (branch per run, PR opened by the Coder, reviewed by the
+    # Reviewer). Empty for purely local runs.
+    branch: str | None = None
+    pr_number: int | None = None
+    pr_url: str | None = None
+
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
 

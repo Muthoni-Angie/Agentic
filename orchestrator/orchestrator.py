@@ -6,6 +6,11 @@ Coder), and stops ONLY when both the Tester and the Reviewer approve.
 
 Agents are injected, never imported by stage — this keeps the orchestrator open
 for extension (Architect, Security Auditor, …) without modification.
+
+When an optional :class:`GitHubService` is injected, the same workflow is mapped
+onto a real PR: a ``run/<id>`` branch, the Coder opens the PR, the Tester posts a
+status check, the Reviewer posts a PR review, and the PR is merged on approval.
+Agents remain pure — only the orchestrator talks to the GitHubService.
 """
 
 from __future__ import annotations
@@ -15,6 +20,7 @@ from dataclasses import dataclass
 from agents.base.base_agent import BaseAgent
 from models.agent_result import AgentResult
 from models.run_state import RunState, Stage
+from services.github_service import GitHubService
 from services.state_service import StateService
 
 
@@ -35,6 +41,7 @@ class Orchestrator:
         tester: BaseAgent,
         reviewer: BaseAgent,
         max_iterations: int = 5,
+        github: GitHubService | None = None,
     ) -> None:
         self.state = state_service
         self.planner = planner
@@ -42,6 +49,7 @@ class Orchestrator:
         self.tester = tester
         self.reviewer = reviewer
         self.max_iterations = max_iterations
+        self.github = github
 
     def start(self, run_id: str | None = None) -> RunState:
         return self.state.create_run(run_id)
@@ -53,6 +61,10 @@ class Orchestrator:
 
         self.logs: list[StepLog] = []
 
+        if self.github and state.branch is None:
+            state.branch = self.github.ensure_run_branch(state.run_id)
+            self.state.save(state)
+
         while state.stage != Stage.DONE:
             if state.iteration > self.max_iterations:
                 state.record_transition(state.stage, "orchestrator",
@@ -63,17 +75,20 @@ class Orchestrator:
             if state.stage == Stage.PLANNING:
                 self._step(state, self.planner)
                 state.planner_complete = True
+                self._gh_planner(state)
                 state.record_transition(Stage.CODING, self.planner.name)
 
             elif state.stage == Stage.CODING:
                 self._step(state, self.coder)
                 state.coder_complete = True
+                self._gh_coder(state)
                 state.record_transition(Stage.TESTING, self.coder.name)
 
             elif state.stage == Stage.TESTING:
                 result = self._step(state, self.tester)
                 state.tester_complete = True
                 state.tester_approved = bool(result.approved)
+                self._gh_tester(state, state.tester_approved)
                 if state.tester_approved:
                     state.record_transition(Stage.REVIEWING, self.tester.name,
                                             "tests approved")
@@ -85,9 +100,11 @@ class Orchestrator:
                 result = self._step(state, self.reviewer)
                 state.reviewer_complete = True
                 state.reviewer_approved = bool(result.approved)
+                self._gh_reviewer(state, state.reviewer_approved, result)
                 if state.is_complete:
                     state.record_transition(Stage.DONE, self.reviewer.name,
                                             "tester + reviewer approved")
+                    self._gh_merge(state)
                 else:
                     self._reject_to_coder(state, self.reviewer.name,
                                           "reviewer requested changes")
@@ -112,3 +129,89 @@ class Orchestrator:
         state.reviewer_approved = False
         state.coder_complete = False
         state.record_transition(Stage.CODING, agent, note)
+
+    # ---- GitHub-native hooks (no-ops when self.github is None) ---------- #
+    def _pipeline_dir(self, state: RunState) -> str:
+        return f".pipeline/{state.run_id}"
+
+    def _gh_planner(self, state: RunState) -> None:
+        if not self.github:
+            return
+        self.github.commit_paths(
+            [self._pipeline_dir(state)],
+            f"run {state.run_id}: planner artifacts (idea, spec, tasks)",
+        )
+
+    def _gh_coder(self, state: RunState) -> None:
+        if not self.github:
+            return
+        gh = self.github
+        gh.commit_paths(
+            [self._pipeline_dir(state), "src"],
+            f"run {state.run_id}: coder implementation",
+        )
+        gh.push(state.branch or gh.run_branch(state.run_id))
+        if state.pr_number is None:
+            number, url = gh.open_pr(
+                state.branch or gh.run_branch(state.run_id),
+                f"run/{state.run_id}: autonomous pipeline",
+                self._pr_body(state),
+            )
+            state.pr_number = number
+            state.pr_url = url
+
+    def _gh_tester(self, state: RunState, approved: bool) -> None:
+        if not self.github:
+            return
+        gh = self.github
+        sha = gh.commit_paths(
+            [self._pipeline_dir(state), "tests"],
+            f"run {state.run_id}: tester tests + report",
+        )
+        gh.push(state.branch or gh.run_branch(state.run_id))
+        gh.post_status(
+            sha,
+            "success" if approved else "failure",
+            "agentic/tester",
+            "tests passed" if approved else "defects found — changes requested",
+        )
+
+    def _gh_reviewer(
+        self, state: RunState, approved: bool, result: AgentResult
+    ) -> None:
+        if not self.github or state.pr_number is None:
+            return
+        gh = self.github
+        gh.commit_paths(
+            [self._pipeline_dir(state)],
+            f"run {state.run_id}: reviewer review + feedback",
+        )
+        gh.push(state.branch or gh.run_branch(state.run_id))
+        gh.post_review(
+            state.pr_number,
+            "APPROVE" if approved else "REQUEST_CHANGES",
+            "\n".join(result.messages) or "Automated review.",
+        )
+
+    def _gh_merge(self, state: RunState) -> None:
+        if not self.github or state.pr_number is None:
+            return
+        self.github.merge_pr(state.pr_number)
+
+    def _pr_body(self, state: RunState) -> str:
+        lines = [
+            f"Autonomous pipeline run **{state.run_id}**.",
+            "",
+            f"Artifacts live in `.pipeline/{state.run_id}/`. "
+            "Each commit on this branch is one agent's handoff.",
+            "",
+            "### Agent log",
+        ]
+        for log in self.logs:
+            for msg in log.result.messages:
+                lines.append(f"- **{log.agent}** ({log.stage.value}): {msg}")
+        lines += [
+            "",
+            "🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+        ]
+        return "\n".join(lines)

@@ -87,6 +87,32 @@ python -m orchestrator.run --run 001
 pytest -q
 ```
 
+### GitHub-native mode (Coder opens a PR, Reviewer reviews it)
+
+The same workflow maps onto a real pull request. A `GitHubService` (the only
+component that knows git) is injected into the orchestrator; **agents stay pure**.
+
+```
+run/<id> branch  →  Planner commits idea/spec/tasks
+                 →  Coder commits src/, pushes, OPENS THE PR
+                 →  Tester posts a status check (✓/✗) via the API
+                 →  Reviewer posts a PR review (APPROVE / REQUEST_CHANGES)
+                 →  both approved → merge to main → Vercel redeploys
+                 (REQUEST_CHANGES or failing check → loop back to Coder)
+```
+
+```bash
+# Dry run — prints the exact git/gh commands, performs NO side effects:
+python -m orchestrator.run --github
+
+# Live — actually creates the branch, PR, status, review and merge:
+python -m orchestrator.run --github --live --repo Muthoni-Angie/Agentic
+```
+
+The Tester's status check uses the GitHub Statuses API (only the `repo` token
+scope — no GitHub Actions / `workflow` scope needed). The Reviewer maps cleanly
+onto a PR review because a GitHub review is inherently read-only.
+
 ### Adding a new agent (e.g. Architect, Security Auditor)
 
 1. Subclass `BaseAgent`, implement `execute(context) -> AgentResult`.
