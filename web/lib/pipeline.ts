@@ -1,10 +1,18 @@
 import fs from "node:fs/promises";
+import fsSync from "node:fs";
 import path from "node:path";
 
-// The pipeline root lives one level up from the web app by default. Override
-// with PIPELINE_ROOT for other deployment layouts.
-export const PIPELINE_ROOT =
-  process.env.PIPELINE_ROOT ?? path.join(process.cwd(), "..", ".pipeline");
+// Resolve the pipeline root. On Vercel the project root is web/, where a
+// build-time snapshot lives at ./.pipeline; in local dev we read the live
+// repo-root ../.pipeline. PIPELINE_ROOT overrides both.
+function resolvePipelineRoot(): string {
+  if (process.env.PIPELINE_ROOT) return process.env.PIPELINE_ROOT;
+  const bundled = path.join(process.cwd(), ".pipeline");
+  if (fsSync.existsSync(bundled)) return bundled;
+  return path.join(process.cwd(), "..", ".pipeline");
+}
+
+export const PIPELINE_ROOT = resolvePipelineRoot();
 
 export const STAGES = [
   "PLANNING",
