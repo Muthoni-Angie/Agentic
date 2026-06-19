@@ -1,0 +1,16 @@
+{
+  "run_id": "gh-3",
+  "created_by": "coder",
+  "created_at": "2026-06-19T18:53:46.928792Z",
+  "summary": "Implemented F2 (Matching engine): Reconcile transactions across two sources by amount and date.",
+  "files_changed": [
+    "src/ledgerloop/matcher.py"
+  ],
+  "decisions": [
+    "Built strictly from the spec for this feature.",
+    "Package-relative imports; small composable modules."
+  ],
+  "addressed_tasks": [
+    "F2"
+  ]
+}
