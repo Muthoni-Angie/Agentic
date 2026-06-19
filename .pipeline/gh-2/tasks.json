@@ -1,0 +1,13 @@
+{
+  "run_id": "gh-2",
+  "created_by": "planner",
+  "created_at": "2026-06-19T18:50:16.290713Z",
+  "tasks": [
+    {
+      "id": "F1",
+      "title": "Domain models",
+      "description": "Define the Transaction and Reconciliation data models.",
+      "done": false
+    }
+  ]
+}
