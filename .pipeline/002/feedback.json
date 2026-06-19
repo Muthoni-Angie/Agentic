@@ -1,0 +1,12 @@
+{
+  "run_id": "002",
+  "created_by": "reviewer",
+  "created_at": "2026-06-19T16:58:15.009679Z",
+  "items": [
+    {
+      "severity": "suggestion",
+      "message": "Consider adding integration tests across source adapters."
+    }
+  ],
+  "approved": true
+}

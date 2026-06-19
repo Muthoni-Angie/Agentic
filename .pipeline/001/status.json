@@ -1,0 +1,47 @@
+{
+  "run_id": "001",
+  "stage": "DONE",
+  "planner_complete": true,
+  "coder_complete": true,
+  "tester_complete": true,
+  "reviewer_complete": true,
+  "tester_approved": true,
+  "reviewer_approved": true,
+  "iteration": 0,
+  "history": [
+    {
+      "iteration": 0,
+      "from_stage": "PLANNING",
+      "to_stage": "CODING",
+      "agent": "planner",
+      "note": "",
+      "timestamp": "2026-06-19T16:49:12.335028Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "CODING",
+      "to_stage": "TESTING",
+      "agent": "coder",
+      "note": "",
+      "timestamp": "2026-06-19T16:49:12.346392Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "TESTING",
+      "to_stage": "REVIEWING",
+      "agent": "tester",
+      "note": "tests approved",
+      "timestamp": "2026-06-19T16:49:12.357204Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "REVIEWING",
+      "to_stage": "DONE",
+      "agent": "reviewer",
+      "note": "tester + reviewer approved",
+      "timestamp": "2026-06-19T16:49:12.367538Z"
+    }
+  ],
+  "created_at": "2026-06-19T16:49:12.322358Z",
+  "updated_at": "2026-06-19T16:49:12.367539Z"
+}

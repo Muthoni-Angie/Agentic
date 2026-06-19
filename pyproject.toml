@@ -1,0 +1,26 @@
+[project]
+name = "agentic"
+version = "0.1.0"
+description = "GitHub-native autonomous software engineering framework where specialized agents collaborate through filesystem artifacts."
+requires-python = ">=3.13"
+dependencies = [
+    "pydantic>=2.6",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[project.scripts]
+agentic = "orchestrator.run:main"
+
+[tool.setuptools]
+packages = ["agents", "models", "services", "orchestrator"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+# We use plain test functions, not test classes — don't collect domain classes
+# such as TesterAgent / TestCase / TestPlanArtifact as if they were test suites.
+python_classes = ["_NoTestClasses"]
