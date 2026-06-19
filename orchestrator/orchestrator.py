@@ -182,16 +182,23 @@ class Orchestrator:
         if not self.github or state.pr_number is None:
             return
         gh = self.github
-        gh.commit_paths(
+        sha = gh.commit_paths(
             [self._pipeline_dir(state)],
             f"run {state.run_id}: reviewer review + feedback",
         )
         gh.push(state.branch or gh.run_branch(state.run_id))
-        gh.post_review(
-            state.pr_number,
-            "APPROVE" if approved else "REQUEST_CHANGES",
-            "\n".join(result.messages) or "Automated review.",
+        # The reviewer's machine-readable gate is a status check (the merge
+        # condition), mirroring the tester. A single account cannot formally
+        # APPROVE its own PR, so the verdict is also posted as a COMMENT review.
+        gh.post_status(
+            sha,
+            "success" if approved else "failure",
+            "agentic/reviewer",
+            "approved" if approved else "changes requested",
         )
+        verdict = "✅ APPROVED" if approved else "🔁 CHANGES REQUESTED"
+        body = verdict + "\n\n" + ("\n".join(result.messages) or "Automated review.")
+        gh.post_review(state.pr_number, "COMMENT", body)
 
     def _gh_merge(self, state: RunState) -> None:
         if not self.github or state.pr_number is None:

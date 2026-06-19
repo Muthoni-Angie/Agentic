@@ -73,11 +73,15 @@ def test_full_pr_flow_reaches_done_and_merges(project):
     assert state.pr_url and "pull/0" in state.pr_url
 
     joined = "\n".join(gh.calls)
-    # Branch created, PR opened, tester check green, reviewer approved, merged.
+    # Branch created, PR opened, both checks green, review posted, merged.
     assert "git checkout -B run/001" in joined
     assert "gh pr create" in joined
+    assert "context=agentic/tester" in joined
+    assert "context=agentic/reviewer" in joined
     assert "state=success" in joined
-    assert "event=APPROVE" in joined
+    # Single account can't self-APPROVE, so the verdict is a COMMENT review.
+    assert "event=COMMENT" in joined
+    assert "event=APPROVE" not in joined
     assert "gh pr merge 0" in joined
 
 
