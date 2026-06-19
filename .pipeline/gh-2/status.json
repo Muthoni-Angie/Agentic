@@ -1,17 +1,26 @@
 {
   "run_id": "gh-2",
-  "stage": "PLANNING",
+  "stage": "CODING",
   "planner_complete": true,
-  "coder_complete": false,
+  "coder_complete": true,
   "tester_complete": false,
   "reviewer_complete": false,
   "tester_approved": false,
   "reviewer_approved": false,
   "iteration": 0,
-  "history": [],
+  "history": [
+    {
+      "iteration": 0,
+      "from_stage": "PLANNING",
+      "to_stage": "CODING",
+      "agent": "planner",
+      "note": "",
+      "timestamp": "2026-06-19T18:50:16.302824Z"
+    }
+  ],
   "branch": "run/gh-2",
   "pr_number": null,
   "pr_url": null,
   "created_at": "2026-06-19T18:50:16.281845Z",
-  "updated_at": "2026-06-19T18:50:16.281851Z"
+  "updated_at": "2026-06-19T18:50:16.302846Z"
 }
