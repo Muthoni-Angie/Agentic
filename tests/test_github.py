@@ -46,7 +46,10 @@ def test_status_and_review_command_shapes(tmp_path):
     assert "state=success" in joined
     assert "repos/owner/repo/pulls/7/reviews" in joined
     assert "event=APPROVE" in joined
-    assert "gh pr merge 7 --repo owner/repo --squash --delete-branch" in joined
+    assert (
+        "gh pr merge 7 --repo owner/repo --squash --delete-branch --admin"
+        in joined
+    )
 
 
 def _gh_orchestrator(project, github, **kwargs):
