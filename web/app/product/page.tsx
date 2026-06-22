@@ -39,6 +39,20 @@ export default async function ProductPage() {
           {product.pitch}
         </p>
 
+        <a
+          href="https://ledgerloop-seven.vercel.app"
+          target="_blank"
+          rel="noreferrer"
+          className="inline-flex w-fit items-center gap-2 rounded-xl bg-[var(--color-coder)] px-4 py-2 text-sm font-semibold text-[#06281d] transition-all hover:brightness-110"
+        >
+          Open the live app ↗
+        </a>
+        {product.doneCount < product.total && (
+          <span className="text-xs text-[var(--color-faint)]">
+            The live app updates as the agents ship the remaining features.
+          </span>
+        )}
+
         {/* Progress */}
         <div className="mt-1 flex flex-col gap-1.5">
           <div className="flex items-center justify-between text-xs">
