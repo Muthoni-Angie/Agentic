@@ -40,11 +40,17 @@ export default function RootLayout({
                 >
                   Runs
                 </Link>
-                <a
-                  href="https://github.com"
+                <Link
+                  href="/product"
                   className="rounded-md px-3 py-1.5 text-[var(--color-muted)] transition-colors hover:bg-[var(--color-surface)] hover:text-[var(--color-text)]"
                 >
-                  Docs
+                  Product
+                </Link>
+                <a
+                  href="https://github.com/Muthoni-Angie/Agentic"
+                  className="rounded-md px-3 py-1.5 text-[var(--color-muted)] transition-colors hover:bg-[var(--color-surface)] hover:text-[var(--color-text)]"
+                >
+                  GitHub
                 </a>
               </nav>
             </div>

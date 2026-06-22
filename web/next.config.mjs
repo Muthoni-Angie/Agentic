@@ -16,6 +16,7 @@ const nextConfig = {
     "/runs/[runId]": ["./.pipeline/**"],
     "/api/runs": ["./.pipeline/**"],
     "/api/runs/[runId]": ["./.pipeline/**"],
+    "/product": ["./product-src/**", "./roadmap.json"],
   },
 };
 

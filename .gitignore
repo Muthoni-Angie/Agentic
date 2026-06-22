@@ -11,6 +11,8 @@ web/.next/
 web/out/
 web/next-env.d.ts
 web/.pipeline/
+web/product-src/
+web/roadmap.json
 
 # OS
 .DS_Store
