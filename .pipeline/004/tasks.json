@@ -1,0 +1,13 @@
+{
+  "run_id": "004",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:16:46.316355Z",
+  "tasks": [
+    {
+      "id": "F5",
+      "title": "Web app shell",
+      "description": "A responsive single-page UI shell with two CSV inputs and a toolbar.",
+      "done": false
+    }
+  ]
+}

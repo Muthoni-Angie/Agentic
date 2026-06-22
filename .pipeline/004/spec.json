@@ -1,0 +1,21 @@
+{
+  "run_id": "004",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:16:46.316343Z",
+  "overview": "This run builds feature F5: Web app shell. A responsive single-page UI shell with two CSV inputs and a toolbar.",
+  "architecture": "A small, composable Python package (`ledgerloop`) grown feature by feature.",
+  "components": [
+    "webapp/index.html",
+    "webapp/styles.css"
+  ],
+  "requirements": [
+    "Two labelled CSV input areas (Source A / Source B)",
+    "Reconcile / Load sample / Clear / Export controls",
+    "Responsive, modern dark theme"
+  ],
+  "non_functional": [
+    "Deterministic",
+    "Fully unit-tested",
+    "Strongly typed"
+  ]
+}
