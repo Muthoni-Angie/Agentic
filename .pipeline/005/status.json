@@ -1,0 +1,50 @@
+{
+  "run_id": "005",
+  "stage": "DONE",
+  "planner_complete": true,
+  "coder_complete": true,
+  "tester_complete": true,
+  "reviewer_complete": true,
+  "tester_approved": true,
+  "reviewer_approved": true,
+  "iteration": 0,
+  "history": [
+    {
+      "iteration": 0,
+      "from_stage": "PLANNING",
+      "to_stage": "CODING",
+      "agent": "planner",
+      "note": "",
+      "timestamp": "2026-06-22T09:24:18.908748Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "CODING",
+      "to_stage": "TESTING",
+      "agent": "coder",
+      "note": "",
+      "timestamp": "2026-06-22T09:24:24.475368Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "TESTING",
+      "to_stage": "REVIEWING",
+      "agent": "tester",
+      "note": "tests approved",
+      "timestamp": "2026-06-22T09:24:27.783650Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "REVIEWING",
+      "to_stage": "DONE",
+      "agent": "reviewer",
+      "note": "tester + reviewer approved",
+      "timestamp": "2026-06-22T09:24:32.133553Z"
+    }
+  ],
+  "branch": "run/005",
+  "pr_number": 9,
+  "pr_url": "https://github.com/Muthoni-Angie/Agentic/pull/9",
+  "created_at": "2026-06-22T09:24:17.760818Z",
+  "updated_at": "2026-06-22T09:24:32.133615Z"
+}

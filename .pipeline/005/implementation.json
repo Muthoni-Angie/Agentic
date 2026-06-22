@@ -1,0 +1,16 @@
+{
+  "run_id": "005",
+  "created_by": "coder",
+  "created_at": "2026-06-22T09:24:18.932249Z",
+  "summary": "Implemented F6 (CSV parser (web)): Parse pasted CSV text into transaction objects in the browser.",
+  "files_changed": [
+    "src/webapp/parse.js"
+  ],
+  "decisions": [
+    "Built strictly from the spec for this feature.",
+    "Package-relative imports; small composable modules."
+  ],
+  "addressed_tasks": [
+    "F6"
+  ]
+}
