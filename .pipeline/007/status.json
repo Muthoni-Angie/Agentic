@@ -1,17 +1,26 @@
 {
   "run_id": "007",
-  "stage": "PLANNING",
+  "stage": "CODING",
   "planner_complete": true,
-  "coder_complete": false,
+  "coder_complete": true,
   "tester_complete": false,
   "reviewer_complete": false,
   "tester_approved": false,
   "reviewer_approved": false,
   "iteration": 0,
-  "history": [],
+  "history": [
+    {
+      "iteration": 0,
+      "from_stage": "PLANNING",
+      "to_stage": "CODING",
+      "agent": "planner",
+      "note": "",
+      "timestamp": "2026-06-22T09:25:09.407257Z"
+    }
+  ],
   "branch": "run/007",
   "pr_number": null,
   "pr_url": null,
   "created_at": "2026-06-22T09:25:07.612409Z",
-  "updated_at": "2026-06-22T09:25:07.612426Z"
+  "updated_at": "2026-06-22T09:25:09.407286Z"
 }
