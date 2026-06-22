@@ -1,0 +1,15 @@
+{
+  "run_id": "009",
+  "created_by": "tester",
+  "created_at": "2026-06-22T09:25:56.745796Z",
+  "approach": "Unit tests for feature F10 (Sample data & one-click demo), covering happy paths and edge cases.",
+  "cases": [
+    {
+      "name": "tests for F10",
+      "kind": "unit",
+      "covers": "Sample data & one-click demo",
+      "passed": true
+    }
+  ],
+  "files_changed": []
+}
