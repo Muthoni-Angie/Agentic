@@ -1,0 +1,19 @@
+{
+  "run_id": "006",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:24:43.916183Z",
+  "overview": "This run builds feature F7: Matching engine (web). Reconcile two transaction lists in the browser by amount and date.",
+  "architecture": "A small, composable Python package (`ledgerloop`) grown feature by feature.",
+  "components": [
+    "webapp/engine.js"
+  ],
+  "requirements": [
+    "Match on equal amount and date; each B row matches at most one A row",
+    "Return matched pairs and unmatched ids on both sides"
+  ],
+  "non_functional": [
+    "Deterministic",
+    "Fully unit-tested",
+    "Strongly typed"
+  ]
+}

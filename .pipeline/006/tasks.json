@@ -1,0 +1,13 @@
+{
+  "run_id": "006",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:24:43.916197Z",
+  "tasks": [
+    {
+      "id": "F7",
+      "title": "Matching engine (web)",
+      "description": "Reconcile two transaction lists in the browser by amount and date.",
+      "done": false
+    }
+  ]
+}
