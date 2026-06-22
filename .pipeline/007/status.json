@@ -1,12 +1,12 @@
 {
   "run_id": "007",
-  "stage": "TESTING",
+  "stage": "REVIEWING",
   "planner_complete": true,
   "coder_complete": true,
   "tester_complete": true,
-  "reviewer_complete": false,
+  "reviewer_complete": true,
   "tester_approved": true,
-  "reviewer_approved": false,
+  "reviewer_approved": true,
   "iteration": 0,
   "history": [
     {
@@ -24,11 +24,19 @@
       "agent": "coder",
       "note": "",
       "timestamp": "2026-06-22T09:25:14.402515Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "TESTING",
+      "to_stage": "REVIEWING",
+      "agent": "tester",
+      "note": "tests approved",
+      "timestamp": "2026-06-22T09:25:17.775810Z"
     }
   ],
   "branch": "run/007",
   "pr_number": 11,
   "pr_url": "https://github.com/Muthoni-Angie/Agentic/pull/11",
   "created_at": "2026-06-22T09:25:07.612409Z",
-  "updated_at": "2026-06-22T09:25:14.402563Z"
+  "updated_at": "2026-06-22T09:25:17.775881Z"
 }
