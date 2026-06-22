@@ -1,0 +1,16 @@
+{
+  "run_id": "007",
+  "created_by": "coder",
+  "created_at": "2026-06-22T09:25:09.428147Z",
+  "summary": "Implemented F8 (Summary & report): Compute summary stats and a downloadable Markdown report.",
+  "files_changed": [
+    "src/webapp/report.js"
+  ],
+  "decisions": [
+    "Built strictly from the spec for this feature.",
+    "Package-relative imports; small composable modules."
+  ],
+  "addressed_tasks": [
+    "F8"
+  ]
+}
