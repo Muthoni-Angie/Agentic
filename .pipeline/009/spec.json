@@ -1,0 +1,19 @@
+{
+  "run_id": "009",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:25:51.346533Z",
+  "overview": "This run builds feature F10: Sample data & one-click demo. Bundle sample CSVs so the tool can be tried in one click.",
+  "architecture": "A small, composable Python package (`ledgerloop`) grown feature by feature.",
+  "components": [
+    "webapp/sample.js"
+  ],
+  "requirements": [
+    "Provide realistic sample data for both sources",
+    "Load sample fills both inputs and reconciles immediately"
+  ],
+  "non_functional": [
+    "Deterministic",
+    "Fully unit-tested",
+    "Strongly typed"
+  ]
+}
