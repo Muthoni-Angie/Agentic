@@ -1,0 +1,16 @@
+{
+  "run_id": "008",
+  "created_by": "coder",
+  "created_at": "2026-06-22T09:25:30.419571Z",
+  "summary": "Implemented F9 (Interactive app + results): Wire inputs to the engine and render summary cards and result tables.",
+  "files_changed": [
+    "src/webapp/app.js"
+  ],
+  "decisions": [
+    "Built strictly from the spec for this feature.",
+    "Package-relative imports; small composable modules."
+  ],
+  "addressed_tasks": [
+    "F9"
+  ]
+}
