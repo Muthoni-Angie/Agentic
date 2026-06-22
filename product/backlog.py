@@ -247,6 +247,347 @@ def test_run_end_to_end():
 '''
 
 
+# =========================================================================== #
+# Web app — LedgerLoop becomes a self-contained, clickable reconciliation tool #
+# built entirely from static files (no server, no build step). Each feature   #
+# below is a real increment the agents materialise into src/webapp/.           #
+# =========================================================================== #
+
+_WEB_INDEX = '''<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LedgerLoop — Reconciliation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark">L</span>
+      <div>
+        <h1>LedgerLoop</h1>
+        <p>Match transactions across two sources in seconds.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="inputs">
+      <div class="panel">
+        <label for="source-a">Source A <span>(CSV: id, amount, date)</span></label>
+        <textarea id="source-a" spellcheck="false" placeholder="id,amount,date&#10;a1,1000,2026-01-01"></textarea>
+      </div>
+      <div class="panel">
+        <label for="source-b">Source B <span>(CSV: id, amount, date)</span></label>
+        <textarea id="source-b" spellcheck="false" placeholder="id,amount,date&#10;b1,1000,2026-01-01"></textarea>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <button id="reconcile" class="btn btn-primary">Reconcile</button>
+      <button id="load-sample" class="btn">Load sample data</button>
+      <button id="clear" class="btn btn-ghost">Clear</button>
+      <button id="export" class="btn btn-ghost" hidden>Export report</button>
+    </div>
+
+    <p id="error" class="error" hidden></p>
+
+    <section id="summary" class="cards" hidden></section>
+    <section id="results" class="results" hidden></section>
+    <p id="empty" class="empty">Paste two CSVs (or load the sample) and hit Reconcile.</p>
+  </main>
+
+  <footer class="app-footer">
+    Built autonomously by the <strong>Agentic</strong> pipeline — Planner → Coder → Tester → Reviewer.
+  </footer>
+
+  <script src="parse.js"></script>
+  <script src="engine.js"></script>
+  <script src="report.js"></script>
+  <script src="sample.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+'''
+
+_WEB_STYLES = ''':root {
+  --bg: #0a0c10; --surface: #11141b; --surface-2: #161a23;
+  --border: #232834; --text: #e6e9ef; --muted: #8b93a7; --faint: #5b6273;
+  --brand: #6d8bff; --ok: #46c98b; --warn: #f0b35a; --danger: #f0688a;
+  --radius: 14px;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+.app-header { border-bottom: 1px solid var(--border); padding: 18px 20px; }
+.brand { display: flex; align-items: center; gap: 12px; max-width: 1000px; margin: 0 auto; }
+.brand-mark {
+  width: 38px; height: 38px; border-radius: 10px; display: grid; place-items: center;
+  font-weight: 800; color: #fff; background: linear-gradient(135deg, var(--brand), var(--danger));
+}
+.brand h1 { font-size: 18px; margin: 0; letter-spacing: -0.01em; }
+.brand p { font-size: 12px; margin: 2px 0 0; color: var(--faint); }
+.container { max-width: 1000px; margin: 0 auto; padding: 24px 20px 60px; }
+.inputs { display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+@media (max-width: 680px) { .inputs { grid-template-columns: 1fr; } }
+.panel label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.panel label span { color: var(--faint); font-weight: 400; }
+textarea {
+  width: 100%; min-height: 170px; resize: vertical; padding: 12px;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius);
+  color: var(--text); font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px;
+}
+textarea:focus { outline: none; border-color: var(--brand); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 18px 0; }
+.btn {
+  padding: 9px 16px; border-radius: 10px; border: 1px solid var(--border);
+  background: var(--surface-2); color: var(--text); font-size: 14px; font-weight: 600; cursor: pointer;
+}
+.btn:hover { filter: brightness(1.15); }
+.btn-primary { background: var(--brand); border-color: var(--brand); color: #fff; }
+.btn-ghost { background: transparent; }
+.error { color: var(--danger); font-size: 13px; margin: 0 0 14px; }
+.empty { color: var(--faint); font-size: 14px; text-align: center; padding: 32px 0; }
+.cards { display: grid; gap: 12px; grid-template-columns: repeat(4, 1fr); margin-bottom: 22px; }
+@media (max-width: 680px) { .cards { grid-template-columns: repeat(2, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px; }
+.card .value { font-size: 26px; font-weight: 800; }
+.card .label { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.results { display: grid; gap: 18px; }
+.result-block h3 { font-size: 14px; margin: 0 0 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); }
+th { color: var(--muted); font-weight: 600; }
+td { font-family: ui-monospace, Menlo, monospace; }
+.app-footer { border-top: 1px solid var(--border); padding: 18px 20px; text-align: center; color: var(--faint); font-size: 12px; }
+'''
+
+_WEB_PARSE = '''// CSV parsing for LedgerLoop.
+window.LedgerLoop = window.LedgerLoop || {};
+
+window.LedgerLoop.parseCsv = function parseCsv(text) {
+  const lines = String(text || "").trim().split(/\\r?\\n/).filter(Boolean);
+  if (lines.length === 0) return [];
+  const header = lines[0].split(",").map((h) => h.trim().toLowerCase());
+  const idx = { id: header.indexOf("id"), amount: header.indexOf("amount"), date: header.indexOf("date") };
+  const rows = [];
+  for (let i = 1; i < lines.length; i++) {
+    const cells = lines[i].split(",");
+    const id = (cells[idx.id] || "").trim();
+    if (!id) continue;
+    rows.push({
+      id,
+      amount: parseInt((cells[idx.amount] || "0").trim(), 10) || 0,
+      date: (cells[idx.date] || "").trim(),
+    });
+  }
+  return rows;
+};
+'''
+
+_WEB_ENGINE = '''// Matching engine for LedgerLoop (mirrors the Python core).
+window.LedgerLoop = window.LedgerLoop || {};
+
+window.LedgerLoop.reconcile = function reconcile(left, right) {
+  const matched = [];
+  const unmatchedLeft = [];
+  const remaining = right.slice();
+  for (const tx of left) {
+    const j = remaining.findIndex((r) => r.amount === tx.amount && r.date === tx.date);
+    if (j >= 0) {
+      matched.push([tx.id, remaining[j].id]);
+      remaining.splice(j, 1);
+    } else {
+      unmatchedLeft.push(tx.id);
+    }
+  }
+  return { matched, unmatchedLeft, unmatchedRight: remaining.map((r) => r.id) };
+};
+'''
+
+_WEB_REPORT = '''// Summary + Markdown report for a reconciliation result.
+window.LedgerLoop = window.LedgerLoop || {};
+
+window.LedgerLoop.summarize = function summarize(rec) {
+  const matched = rec.matched.length;
+  const ul = rec.unmatchedLeft.length;
+  const ur = rec.unmatchedRight.length;
+  const total = matched + ul + ur;
+  const rate = total === 0 ? 0 : Math.round((matched / total) * 100);
+  return { matched, unmatchedLeft: ul, unmatchedRight: ur, rate };
+};
+
+window.LedgerLoop.toMarkdown = function toMarkdown(rec) {
+  const s = window.LedgerLoop.summarize(rec);
+  return [
+    "# LedgerLoop Reconciliation Report",
+    "",
+    "- Matched: " + s.matched,
+    "- Unmatched (A): " + s.unmatchedLeft,
+    "- Unmatched (B): " + s.unmatchedRight,
+    "- Match rate: " + s.rate + "%",
+  ].join("\\n");
+};
+'''
+
+_WEB_SAMPLE = '''// Sample data for a one-click demo.
+window.LedgerLoop = window.LedgerLoop || {};
+window.LedgerLoop.SAMPLE_A =
+  "id,amount,date\\na1,1000,2026-01-01\\na2,2550,2026-01-02\\na3,800,2026-01-03\\na4,4200,2026-01-05";
+window.LedgerLoop.SAMPLE_B =
+  "id,amount,date\\nb1,1000,2026-01-01\\nb2,2550,2026-01-02\\nb3,9999,2026-01-04\\nb4,4200,2026-01-05";
+'''
+
+_WEB_APP = '''// Wire the UI: parse -> reconcile -> render summary + tables + export.
+(function () {
+  const LL = window.LedgerLoop;
+  const $ = (id) => document.getElementById(id);
+  let lastRec = null;
+
+  function table(title, rows, headers) {
+    const head = headers.map((h) => "<th>" + h + "</th>").join("");
+    const body = rows.length
+      ? rows.map((r) => "<tr>" + r.map((c) => "<td>" + c + "</td>").join("") + "</tr>").join("")
+      : '<tr><td colspan="' + headers.length + '" style="color:var(--faint)">none</td></tr>';
+    return (
+      '<div class="result-block"><h3>' + title + " (" + rows.length + ")</h3>" +
+      "<table><thead><tr>" + head + "</tr></thead><tbody>" + body + "</tbody></table></div>"
+    );
+  }
+
+  function render(rec) {
+    const s = LL.summarize(rec);
+    $("summary").innerHTML = [
+      ['<div class="card"><div class="value">' + s.matched + '</div><div class="label">Matched</div></div>'],
+      ['<div class="card"><div class="value">' + s.unmatchedLeft + '</div><div class="label">Unmatched A</div></div>'],
+      ['<div class="card"><div class="value">' + s.unmatchedRight + '</div><div class="label">Unmatched B</div></div>'],
+      ['<div class="card"><div class="value">' + s.rate + '%</div><div class="label">Match rate</div></div>'],
+    ].join("");
+    $("results").innerHTML =
+      table("Matched pairs", rec.matched.map((m) => [m[0], m[1]]), ["Source A", "Source B"]) +
+      table("Unmatched in A", rec.unmatchedLeft.map((x) => [x]), ["id"]) +
+      table("Unmatched in B", rec.unmatchedRight.map((x) => [x]), ["id"]);
+    $("summary").hidden = false;
+    $("results").hidden = false;
+    $("empty").hidden = true;
+    $("export").hidden = false;
+  }
+
+  function run() {
+    $("error").hidden = true;
+    try {
+      const a = LL.parseCsv($("source-a").value);
+      const b = LL.parseCsv($("source-b").value);
+      if (a.length === 0 && b.length === 0) {
+        $("error").textContent = "Please enter CSV data in at least one source.";
+        $("error").hidden = false;
+        return;
+      }
+      lastRec = LL.reconcile(a, b);
+      render(lastRec);
+    } catch (e) {
+      $("error").textContent = "Could not reconcile: " + e.message;
+      $("error").hidden = false;
+    }
+  }
+
+  $("reconcile").addEventListener("click", run);
+  $("load-sample").addEventListener("click", function () {
+    $("source-a").value = LL.SAMPLE_A;
+    $("source-b").value = LL.SAMPLE_B;
+    run();
+  });
+  $("clear").addEventListener("click", function () {
+    $("source-a").value = "";
+    $("source-b").value = "";
+    $("summary").hidden = true;
+    $("results").hidden = true;
+    $("export").hidden = true;
+    $("empty").hidden = false;
+  });
+  $("export").addEventListener("click", function () {
+    if (!lastRec) return;
+    const blob = new Blob([LL.toMarkdown(lastRec)], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "reconciliation-report.md";
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+})();
+'''
+
+# --- web feature pytest checks (read the built static files) -------------- #
+_TEST_WEB_SHELL = '''from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def _read(rel):
+    return (ROOT / rel).read_text(encoding="utf-8")
+
+
+def test_index_has_inputs_and_buttons():
+    html = _read("src/webapp/index.html")
+    assert 'id="source-a"' in html and 'id="source-b"' in html
+    assert 'id="reconcile"' in html
+
+
+def test_styles_present():
+    assert ".btn-primary" in _read("src/webapp/styles.css")
+'''
+
+_TEST_WEB_PARSE = '''from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_parse_defined():
+    js = (ROOT / "src/webapp/parse.js").read_text(encoding="utf-8")
+    assert "parseCsv" in js
+'''
+
+_TEST_WEB_ENGINE = '''from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_reconcile_defined():
+    js = (ROOT / "src/webapp/engine.js").read_text(encoding="utf-8")
+    assert "reconcile" in js and "unmatchedRight" in js
+'''
+
+_TEST_WEB_REPORT = '''from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_summarize_and_markdown():
+    js = (ROOT / "src/webapp/report.js").read_text(encoding="utf-8")
+    assert "summarize" in js and "toMarkdown" in js
+'''
+
+_TEST_WEB_APP = '''from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_app_wires_reconcile():
+    js = (ROOT / "src/webapp/app.js").read_text(encoding="utf-8")
+    assert "addEventListener" in js and "render" in js
+
+
+def test_sample_data_present():
+    js = (ROOT / "src/webapp/sample.js").read_text(encoding="utf-8")
+    assert "SAMPLE_A" in js and "SAMPLE_B" in js
+'''
+
+
 BACKLOG: list[Feature] = [
     Feature(
         id="F1",
@@ -295,13 +636,72 @@ BACKLOG: list[Feature] = [
     ),
     Feature(
         id="F5",
-        title="CLI",
-        summary="Reconcile two CSV files end-to-end from the command line.",
+        title="Web app shell",
+        summary="A responsive single-page UI shell with two CSV inputs and a toolbar.",
         spec_points=(
-            "Load two CSVs, reconcile them, print the report",
-            "Expose run() for programmatic use and a main() CLI entrypoint",
+            "Two labelled CSV input areas (Source A / Source B)",
+            "Reconcile / Load sample / Clear / Export controls",
+            "Responsive, modern dark theme",
         ),
-        source_files={"ledgerloop/cli.py": _CLI_PY},
-        test_files={"test_ledgerloop_cli.py": _TEST_CLI},
+        source_files={
+            "webapp/index.html": _WEB_INDEX,
+            "webapp/styles.css": _WEB_STYLES,
+        },
+        test_files={"test_webapp_shell.py": _TEST_WEB_SHELL},
+    ),
+    Feature(
+        id="F6",
+        title="CSV parser (web)",
+        summary="Parse pasted CSV text into transaction objects in the browser.",
+        spec_points=(
+            "Read id, amount, date columns by header name",
+            "Skip blank rows; coerce amount to integer",
+        ),
+        source_files={"webapp/parse.js": _WEB_PARSE},
+        test_files={"test_webapp_parse.py": _TEST_WEB_PARSE},
+    ),
+    Feature(
+        id="F7",
+        title="Matching engine (web)",
+        summary="Reconcile two transaction lists in the browser by amount and date.",
+        spec_points=(
+            "Match on equal amount and date; each B row matches at most one A row",
+            "Return matched pairs and unmatched ids on both sides",
+        ),
+        source_files={"webapp/engine.js": _WEB_ENGINE},
+        test_files={"test_webapp_engine.py": _TEST_WEB_ENGINE},
+    ),
+    Feature(
+        id="F8",
+        title="Summary & report",
+        summary="Compute summary stats and a downloadable Markdown report.",
+        spec_points=(
+            "Compute matched/unmatched counts and a match rate",
+            "Render a Markdown report of the result",
+        ),
+        source_files={"webapp/report.js": _WEB_REPORT},
+        test_files={"test_webapp_report.py": _TEST_WEB_REPORT},
+    ),
+    Feature(
+        id="F9",
+        title="Interactive app + results",
+        summary="Wire inputs to the engine and render summary cards and result tables.",
+        spec_points=(
+            "Reconcile button parses inputs, runs the engine and renders results",
+            "Show summary cards and matched/unmatched tables; handle errors",
+        ),
+        source_files={"webapp/app.js": _WEB_APP},
+        test_files={"test_webapp_app.py": _TEST_WEB_APP},
+    ),
+    Feature(
+        id="F10",
+        title="Sample data & one-click demo",
+        summary="Bundle sample CSVs so the tool can be tried in one click.",
+        spec_points=(
+            "Provide realistic sample data for both sources",
+            "Load sample fills both inputs and reconciles immediately",
+        ),
+        source_files={"webapp/sample.js": _WEB_SAMPLE},
+        test_files={},
     ),
 ]

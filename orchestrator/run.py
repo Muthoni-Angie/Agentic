@@ -72,6 +72,9 @@ def main() -> None:
     parser.add_argument("--no-merge", action="store_true",
                         help="open/update the PR but do not merge it "
                              "(leave it for human review)")
+    parser.add_argument("--all", dest="build_all", action="store_true",
+                        help="exhaustively build every remaining roadmap "
+                             "feature, one run (and PR) per feature")
     args = parser.parse_args()
 
     github = None
@@ -81,6 +84,23 @@ def main() -> None:
     orchestrator = build_orchestrator(
         github=github, auto_merge=not args.no_merge
     )
+
+    if args.build_all:
+        rm = orchestrator.roadmap
+        states = orchestrator.run_until_done()
+        print(f"\nExhaustive build: completed {len(states)} run(s).")
+        for s in states:
+            line = f"  run {s.run_id}: {s.stage.value}"
+            if s.pr_url:
+                line += f" — {s.pr_url}"
+            print(line)
+        remaining = rm.current_feature() if rm else None
+        if rm and rm.is_complete():
+            print(f"\nRoadmap COMPLETE — all {len(rm.backlog)} features built. ✅")
+        elif remaining:
+            print(f"\nStopped with feature {remaining.id} still pending.")
+        return
+
     feature = orchestrator.roadmap.current_feature() if orchestrator.roadmap else None
     state = orchestrator.run(args.run_id)
 

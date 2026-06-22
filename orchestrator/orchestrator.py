@@ -58,6 +58,26 @@ class Orchestrator:
     def start(self, run_id: str | None = None) -> RunState:
         return self.state.create_run(run_id)
 
+    def run_until_done(self, max_features: int = 50) -> list[RunState]:
+        """Exhaustively build every remaining roadmap feature.
+
+        Each iteration runs the full pipeline for the next feature (opening and
+        merging a PR in GitHub mode). Stops when the roadmap is complete or a
+        run fails to reach DONE.
+        """
+        if self.roadmap is None:
+            return [self.run()]
+
+        states: list[RunState] = []
+        guard = 0
+        while not self.roadmap.is_complete() and guard < max_features:
+            guard += 1
+            state = self.run()  # fresh run id; builds the current feature
+            states.append(state)
+            if state.stage != Stage.DONE:
+                break  # rejection/halt — don't loop forever
+        return states
+
     def run(self, run_id: str | None = None) -> RunState:
         state = self.state.load(run_id) if run_id else None
         if state is None:

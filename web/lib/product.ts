@@ -19,7 +19,7 @@ export const FEATURES: FeatureManifest[] = [
   {
     id: "F1",
     title: "Domain models",
-    summary: "Transaction and Reconciliation data models.",
+    summary: "Transaction and Reconciliation data models (Python core).",
     files: ["ledgerloop/__init__.py", "ledgerloop/models.py"],
   },
   {
@@ -42,9 +42,39 @@ export const FEATURES: FeatureManifest[] = [
   },
   {
     id: "F5",
-    title: "CLI",
-    summary: "Reconcile two CSV files end-to-end from the command line.",
-    files: ["ledgerloop/cli.py"],
+    title: "Web app shell",
+    summary: "Responsive single-page UI with two CSV inputs and a toolbar.",
+    files: ["webapp/index.html", "webapp/styles.css"],
+  },
+  {
+    id: "F6",
+    title: "CSV parser (web)",
+    summary: "Parse pasted CSV text into transactions in the browser.",
+    files: ["webapp/parse.js"],
+  },
+  {
+    id: "F7",
+    title: "Matching engine (web)",
+    summary: "Reconcile two transaction lists in the browser.",
+    files: ["webapp/engine.js"],
+  },
+  {
+    id: "F8",
+    title: "Summary & report",
+    summary: "Summary stats and a downloadable Markdown report.",
+    files: ["webapp/report.js"],
+  },
+  {
+    id: "F9",
+    title: "Interactive app + results",
+    summary: "Wire inputs to the engine; render summary cards and tables.",
+    files: ["webapp/app.js"],
+  },
+  {
+    id: "F10",
+    title: "Sample data & one-click demo",
+    summary: "Bundled sample CSVs for a one-click reconciliation demo.",
+    files: ["webapp/sample.js"],
   },
 ];
 
