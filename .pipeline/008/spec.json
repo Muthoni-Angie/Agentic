@@ -1,0 +1,19 @@
+{
+  "run_id": "008",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:25:30.319945Z",
+  "overview": "This run builds feature F9: Interactive app + results. Wire inputs to the engine and render summary cards and result tables.",
+  "architecture": "A small, composable Python package (`ledgerloop`) grown feature by feature.",
+  "components": [
+    "webapp/app.js"
+  ],
+  "requirements": [
+    "Reconcile button parses inputs, runs the engine and renders results",
+    "Show summary cards and matched/unmatched tables; handle errors"
+  ],
+  "non_functional": [
+    "Deterministic",
+    "Fully unit-tested",
+    "Strongly typed"
+  ]
+}

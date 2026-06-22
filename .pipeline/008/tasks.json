@@ -1,0 +1,13 @@
+{
+  "run_id": "008",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:25:30.319956Z",
+  "tasks": [
+    {
+      "id": "F9",
+      "title": "Interactive app + results",
+      "description": "Wire inputs to the engine and render summary cards and result tables.",
+      "done": false
+    }
+  ]
+}
