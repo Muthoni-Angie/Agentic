@@ -1,0 +1,18 @@
+{
+  "run_id": "gh-6",
+  "created_by": "planner",
+  "created_at": "2026-06-22T08:48:35.542413Z",
+  "overview": "This run builds feature F4: Reporting. Render a reconciliation result as a Markdown report.",
+  "architecture": "A small, composable Python package (`ledgerloop`) grown feature by feature.",
+  "components": [
+    "ledgerloop/report.py"
+  ],
+  "requirements": [
+    "Produce a human-readable report of matched/unmatched counts"
+  ],
+  "non_functional": [
+    "Deterministic",
+    "Fully unit-tested",
+    "Strongly typed"
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "run_id": "gh-6",
+  "created_by": "coder",
+  "created_at": "2026-06-22T08:48:35.559546Z",
+  "summary": "Implemented F4 (Reporting): Render a reconciliation result as a Markdown report.",
+  "files_changed": [
+    "src/ledgerloop/report.py"
+  ],
+  "decisions": [
+    "Built strictly from the spec for this feature.",
+    "Package-relative imports; small composable modules."
+  ],
+  "addressed_tasks": [
+    "F4"
+  ]
+}

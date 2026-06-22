@@ -1,0 +1,14 @@
+{
+  "run_id": "gh-6",
+  "created_by": "planner",
+  "created_at": "2026-06-22T08:48:35.542396Z",
+  "name": "LedgerLoop",
+  "pitch": "An automated reconciliation toolkit that matches transactions across sources and reports the result — built incrementally by the agent pipeline.",
+  "problem": "Reconciliation is manual, slow and error-prone for SMBs.",
+  "target_market": "SMBs running multiple payment rails.",
+  "revenue_streams": [
+    "Per-seat SaaS",
+    "Usage-based reconciliation fees"
+  ],
+  "scale_potential": "Built incrementally, one feature per pipeline run."
+}
