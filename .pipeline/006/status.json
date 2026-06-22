@@ -1,0 +1,17 @@
+{
+  "run_id": "006",
+  "stage": "PLANNING",
+  "planner_complete": true,
+  "coder_complete": false,
+  "tester_complete": false,
+  "reviewer_complete": false,
+  "tester_approved": false,
+  "reviewer_approved": false,
+  "iteration": 0,
+  "history": [],
+  "branch": "run/006",
+  "pr_number": null,
+  "pr_url": null,
+  "created_at": "2026-06-22T09:24:42.506484Z",
+  "updated_at": "2026-06-22T09:24:42.506501Z"
+}
