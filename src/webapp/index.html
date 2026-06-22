@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LedgerLoop — Reconciliation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark">L</span>
+      <div>
+        <h1>LedgerLoop</h1>
+        <p>Match transactions across two sources in seconds.</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="inputs">
+      <div class="panel">
+        <label for="source-a">Source A <span>(CSV: id, amount, date)</span></label>
+        <textarea id="source-a" spellcheck="false" placeholder="id,amount,date&#10;a1,1000,2026-01-01"></textarea>
+      </div>
+      <div class="panel">
+        <label for="source-b">Source B <span>(CSV: id, amount, date)</span></label>
+        <textarea id="source-b" spellcheck="false" placeholder="id,amount,date&#10;b1,1000,2026-01-01"></textarea>
+      </div>
+    </section>
+
+    <div class="toolbar">
+      <button id="reconcile" class="btn btn-primary">Reconcile</button>
+      <button id="load-sample" class="btn">Load sample data</button>
+      <button id="clear" class="btn btn-ghost">Clear</button>
+      <button id="export" class="btn btn-ghost" hidden>Export report</button>
+    </div>
+
+    <p id="error" class="error" hidden></p>
+
+    <section id="summary" class="cards" hidden></section>
+    <section id="results" class="results" hidden></section>
+    <p id="empty" class="empty">Paste two CSVs (or load the sample) and hit Reconcile.</p>
+  </main>
+
+  <footer class="app-footer">
+    Built autonomously by the <strong>Agentic</strong> pipeline — Planner → Coder → Tester → Reviewer.
+  </footer>
+
+  <script src="parse.js"></script>
+  <script src="engine.js"></script>
+  <script src="report.js"></script>
+  <script src="sample.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
