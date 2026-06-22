@@ -1,0 +1,19 @@
+{
+  "run_id": "005",
+  "created_by": "planner",
+  "created_at": "2026-06-22T09:17:07.621710Z",
+  "overview": "This run builds feature F6: CSV parser (web). Parse pasted CSV text into transaction objects in the browser.",
+  "architecture": "A small, composable Python package (`ledgerloop`) grown feature by feature.",
+  "components": [
+    "webapp/parse.js"
+  ],
+  "requirements": [
+    "Read id, amount, date columns by header name",
+    "Skip blank rows; coerce amount to integer"
+  ],
+  "non_functional": [
+    "Deterministic",
+    "Fully unit-tested",
+    "Strongly typed"
+  ]
+}
