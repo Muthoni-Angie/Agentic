@@ -1,6 +1,6 @@
 {
   "run_id": "007",
-  "stage": "REVIEWING",
+  "stage": "DONE",
   "planner_complete": true,
   "coder_complete": true,
   "tester_complete": true,
@@ -32,11 +32,19 @@
       "agent": "tester",
       "note": "tests approved",
       "timestamp": "2026-06-22T09:25:17.775810Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "REVIEWING",
+      "to_stage": "DONE",
+      "agent": "reviewer",
+      "note": "tester + reviewer approved",
+      "timestamp": "2026-06-22T09:25:22.017528Z"
     }
   ],
   "branch": "run/007",
   "pr_number": 11,
   "pr_url": "https://github.com/Muthoni-Angie/Agentic/pull/11",
   "created_at": "2026-06-22T09:25:07.612409Z",
-  "updated_at": "2026-06-22T09:25:17.775881Z"
+  "updated_at": "2026-06-22T09:25:22.017582Z"
 }
