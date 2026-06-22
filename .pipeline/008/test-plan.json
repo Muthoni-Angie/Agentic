@@ -1,0 +1,17 @@
+{
+  "run_id": "008",
+  "created_by": "tester",
+  "created_at": "2026-06-22T09:25:35.608939Z",
+  "approach": "Unit tests for feature F9 (Interactive app + results), covering happy paths and edge cases.",
+  "cases": [
+    {
+      "name": "tests for F9",
+      "kind": "unit",
+      "covers": "Interactive app + results",
+      "passed": true
+    }
+  ],
+  "files_changed": [
+    "tests/test_webapp_app.py"
+  ]
+}
