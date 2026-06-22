@@ -1,11 +1,11 @@
 {
   "run_id": "gh-7",
-  "stage": "CODING",
+  "stage": "TESTING",
   "planner_complete": true,
   "coder_complete": true,
-  "tester_complete": false,
+  "tester_complete": true,
   "reviewer_complete": false,
-  "tester_approved": false,
+  "tester_approved": true,
   "reviewer_approved": false,
   "iteration": 0,
   "history": [
@@ -16,11 +16,19 @@
       "agent": "planner",
       "note": "",
       "timestamp": "2026-06-22T14:21:10.062115Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "CODING",
+      "to_stage": "TESTING",
+      "agent": "coder",
+      "note": "",
+      "timestamp": "2026-06-22T14:21:13.695894Z"
     }
   ],
   "branch": "run/gh-7",
-  "pr_number": null,
-  "pr_url": null,
+  "pr_number": 14,
+  "pr_url": "https://github.com/Muthoni-Angie/Agentic/pull/14",
   "created_at": "2026-06-22T14:21:09.923940Z",
-  "updated_at": "2026-06-22T14:21:10.062134Z"
+  "updated_at": "2026-06-22T14:21:13.695905Z"
 }
