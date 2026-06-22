@@ -1,0 +1,17 @@
+{
+  "run_id": "gh-5",
+  "created_by": "tester",
+  "created_at": "2026-06-22T08:43:26.083507Z",
+  "approach": "Unit tests for feature F3 (CSV import), covering happy paths and edge cases.",
+  "cases": [
+    {
+      "name": "tests for F3",
+      "kind": "unit",
+      "covers": "CSV import",
+      "passed": true
+    }
+  ],
+  "files_changed": [
+    "tests/test_ledgerloop_csv_io.py"
+  ]
+}
