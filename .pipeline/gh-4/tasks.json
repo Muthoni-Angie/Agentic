@@ -1,0 +1,13 @@
+{
+  "run_id": "gh-4",
+  "created_by": "planner",
+  "created_at": "2026-06-22T08:18:29.392704Z",
+  "tasks": [
+    {
+      "id": "F2",
+      "title": "Matching engine",
+      "description": "Reconcile transactions across two sources by amount and date.",
+      "done": false
+    }
+  ]
+}
