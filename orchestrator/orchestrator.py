@@ -85,13 +85,16 @@ class Orchestrator:
 
         self.logs: list[StepLog] = []
 
-        # The feature this run is building (roadmap mode). Captured up-front so
-        # marking it done at the end is unambiguous even if state advances.
-        self._feature = self.roadmap.current_feature() if self.roadmap else None
-
+        # Create the run branch FIRST — in live GitHub mode this resets the work
+        # tree to the freshest origin/main, so the roadmap (and source) reflect
+        # already-merged features before we pick this run's feature.
         if self.github and state.branch is None:
             state.branch = self.github.ensure_run_branch(state.run_id)
             self.state.save(state)
+
+        # The feature this run is building (roadmap mode). Captured up-front so
+        # marking it done at the end is unambiguous even if state advances.
+        self._feature = self.roadmap.current_feature() if self.roadmap else None
 
         while state.stage != Stage.DONE:
             if state.iteration > self.max_iterations:

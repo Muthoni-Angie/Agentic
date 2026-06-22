@@ -15,6 +15,7 @@ git/gh commands it *would* run and performs no side effects.
 from __future__ import annotations
 
 import subprocess
+import time
 from collections.abc import Callable, Sequence
 from pathlib import Path
 
@@ -68,8 +69,17 @@ class GitHubService:
 
     def ensure_run_branch(self, run_id: str) -> str:
         branch = self.run_branch(run_id)
-        # -B creates or resets the branch at the current HEAD.
-        self._exec(["git", "checkout", "-B", branch])
+        if self.live:
+            # Always branch from the freshest base. Sequential feature runs would
+            # otherwise stack on each other's pre-squash history and fail to merge
+            # once an earlier feature lands on main as a squashed commit.
+            self._exec(["git", *_GH_CRED, "fetch", "origin", self.base_branch])
+            self._exec(
+                ["git", "checkout", "-B", branch, f"origin/{self.base_branch}"]
+            )
+        else:
+            # -B creates or resets the branch at the current HEAD.
+            self._exec(["git", "checkout", "-B", branch])
         return branch
 
     def commit_paths(self, paths: Sequence[str], message: str) -> str:
@@ -121,16 +131,28 @@ class GitHubService:
             ]
         )
 
-    def merge_pr(self, pr_number: int) -> None:
+    def merge_pr(self, pr_number: int, *, retries: int = 4) -> None:
         # --admin merges as repo admin, bypassing any branch-protection gates
-        # (the pipeline's own gate is tester + reviewer approval).
-        self._exec(
-            [
-                "gh", "pr", "merge", str(pr_number),
-                "--repo", self.repo,
-                "--squash", "--delete-branch", "--admin",
-            ]
-        )
+        # (the pipeline's own gate is tester + reviewer approval). GitHub often
+        # reports a transient "Base branch was modified" right after a branch is
+        # pushed, so retry a few times before giving up.
+        cmd = [
+            "gh", "pr", "merge", str(pr_number),
+            "--repo", self.repo,
+            "--squash", "--delete-branch", "--admin",
+        ]
+        for attempt in range(retries):
+            try:
+                self._exec(cmd)
+                return
+            except RuntimeError as exc:
+                transient = "Base branch was modified" in str(exc) or (
+                    "not mergeable" in str(exc).lower()
+                )
+                if not transient or attempt == retries - 1:
+                    raise
+                if self.live:
+                    time.sleep(2 + attempt)  # brief backoff before retrying
 
     # ---- helpers -------------------------------------------------------- #
     @staticmethod
