@@ -1,0 +1,19 @@
+{
+  "run_id": "gh-5",
+  "created_by": "planner",
+  "created_at": "2026-06-22T08:43:22.735199Z",
+  "overview": "This run builds feature F3: CSV import. Load transactions from CSV text into the domain model.",
+  "architecture": "A small, composable Python package (`ledgerloop`) grown feature by feature.",
+  "components": [
+    "ledgerloop/csv_io.py"
+  ],
+  "requirements": [
+    "Parse CSV with id, amount, date columns",
+    "Skip blank rows; coerce amount to int"
+  ],
+  "non_functional": [
+    "Deterministic",
+    "Fully unit-tested",
+    "Strongly typed"
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "run_id": "gh-5",
+  "created_by": "planner",
+  "created_at": "2026-06-22T08:43:22.735207Z",
+  "tasks": [
+    {
+      "id": "F3",
+      "title": "CSV import",
+      "description": "Load transactions from CSV text into the domain model.",
+      "done": false
+    }
+  ]
+}
