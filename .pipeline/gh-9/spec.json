@@ -1,0 +1,22 @@
+{
+  "run_id": "gh-9",
+  "created_by": "planner",
+  "created_at": "2026-07-02T09:55:25.876485Z",
+  "overview": "A service that ingests transactions from multiple sources and produces a reconciled ledger with an audit trail.",
+  "architecture": "Modular Python core with a pure-function matching engine, a pluggable source adapter layer, and a thin API surface.",
+  "components": [
+    "Matching engine (deterministic, pure functions)",
+    "Source adapters (bank, processor, ledger)",
+    "Reconciliation report builder"
+  ],
+  "requirements": [
+    "Match transactions across two sources by amount and date",
+    "Flag unmatched transactions on both sides",
+    "Produce a summary with matched/unmatched counts"
+  ],
+  "non_functional": [
+    "Deterministic and side-effect-free core",
+    "100% unit-test coverage of the matching engine",
+    "Strong typing throughout"
+  ]
+}
