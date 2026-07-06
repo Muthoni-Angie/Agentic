@@ -1,0 +1,12 @@
+{
+  "run_id": "gh-10",
+  "created_by": "reviewer",
+  "created_at": "2026-07-06T12:32:27.024934Z",
+  "items": [
+    {
+      "severity": "suggestion",
+      "message": "Consider adding integration tests across source adapters."
+    }
+  ],
+  "approved": true
+}
