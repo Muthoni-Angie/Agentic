@@ -1,0 +1,35 @@
+{
+  "run_id": "gh-10",
+  "created_by": "tester",
+  "created_at": "2026-07-06T12:32:25.689267Z",
+  "approach": "Cover happy paths and edge cases of the matching engine with deterministic unit tests, derived from the spec.",
+  "cases": [
+    {
+      "name": "test_happy_path_all_matched",
+      "kind": "unit",
+      "covers": "all transactions reconcile",
+      "passed": true
+    },
+    {
+      "name": "test_unmatched_on_both_sides",
+      "kind": "unit",
+      "covers": "unmatched flagging",
+      "passed": true
+    },
+    {
+      "name": "test_edge_empty_inputs",
+      "kind": "edge",
+      "covers": "empty source handling",
+      "passed": true
+    },
+    {
+      "name": "test_edge_one_right_matches_only_once",
+      "kind": "edge",
+      "covers": "no double-matching",
+      "passed": true
+    }
+  ],
+  "files_changed": [
+    "tests/test_reconcile.py"
+  ]
+}
