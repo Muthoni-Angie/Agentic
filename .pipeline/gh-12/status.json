@@ -1,0 +1,17 @@
+{
+  "run_id": "gh-12",
+  "stage": "PLANNING",
+  "planner_complete": true,
+  "coder_complete": false,
+  "tester_complete": false,
+  "reviewer_complete": false,
+  "tester_approved": false,
+  "reviewer_approved": false,
+  "iteration": 0,
+  "history": [],
+  "branch": "run/gh-12",
+  "pr_number": null,
+  "pr_url": null,
+  "created_at": "2026-07-20T11:31:22.524299Z",
+  "updated_at": "2026-07-20T11:31:22.524306Z"
+}
