@@ -1,0 +1,20 @@
+{
+  "run_id": "gh-12",
+  "created_by": "coder",
+  "created_at": "2026-07-20T11:31:22.653371Z",
+  "summary": "Implemented a deterministic reconciliation engine that matches transactions across two sources by amount and date.",
+  "files_changed": [
+    "src/reconcile.py",
+    "src/__init__.py"
+  ],
+  "decisions": [
+    "Amounts stored in integer minor units to avoid float drift.",
+    "Matching is a pure function for trivial testability.",
+    "Each right-side transaction matches at most one left-side row."
+  ],
+  "addressed_tasks": [
+    "T1",
+    "T2",
+    "T3"
+  ]
+}
