@@ -1,0 +1,15 @@
+{
+  "run_id": "gh-16",
+  "created_by": "planner",
+  "created_at": "2026-08-17T09:26:19.059987Z",
+  "name": "LedgerLoop",
+  "pitch": "An automated reconciliation platform that closes the books for SMBs in minutes instead of days.",
+  "problem": "Finance teams waste hours manually matching transactions across banks, payment processors and accounting systems.",
+  "target_market": "Small and mid-sized businesses with 10–500 employees running multiple payment rails.",
+  "revenue_streams": [
+    "Per-seat SaaS subscription",
+    "Usage-based fee per reconciled transaction batch",
+    "Premium tier for multi-entity consolidation"
+  ],
+  "scale_potential": "Horizontally scalable SaaS; every business with a bank account is a potential customer."
+}
