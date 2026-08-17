@@ -1,0 +1,50 @@
+{
+  "run_id": "gh-16",
+  "stage": "DONE",
+  "planner_complete": true,
+  "coder_complete": true,
+  "tester_complete": true,
+  "reviewer_complete": true,
+  "tester_approved": true,
+  "reviewer_approved": true,
+  "iteration": 0,
+  "history": [
+    {
+      "iteration": 0,
+      "from_stage": "PLANNING",
+      "to_stage": "CODING",
+      "agent": "planner",
+      "note": "",
+      "timestamp": "2026-08-17T09:26:19.072092Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "CODING",
+      "to_stage": "TESTING",
+      "agent": "coder",
+      "note": "",
+      "timestamp": "2026-08-17T09:26:22.482047Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "TESTING",
+      "to_stage": "REVIEWING",
+      "agent": "tester",
+      "note": "tests approved",
+      "timestamp": "2026-08-17T09:26:24.329601Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "REVIEWING",
+      "to_stage": "DONE",
+      "agent": "reviewer",
+      "note": "tester + reviewer approved",
+      "timestamp": "2026-08-17T09:26:26.917438Z"
+    }
+  ],
+  "branch": "run/gh-16",
+  "pr_number": 23,
+  "pr_url": "https://github.com/Muthoni-Angie/Agentic/pull/23",
+  "created_at": "2026-08-17T09:26:18.892808Z",
+  "updated_at": "2026-08-17T09:26:26.917453Z"
+}
