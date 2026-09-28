@@ -1,0 +1,25 @@
+{
+  "run_id": "gh-22",
+  "created_by": "planner",
+  "created_at": "2026-09-28T17:04:19.813046Z",
+  "tasks": [
+    {
+      "id": "T1",
+      "title": "Implement transaction model",
+      "description": "",
+      "done": false
+    },
+    {
+      "id": "T2",
+      "title": "Implement matching engine",
+      "description": "",
+      "done": false
+    },
+    {
+      "id": "T3",
+      "title": "Implement reconciliation summary",
+      "description": "",
+      "done": false
+    }
+  ]
+}
