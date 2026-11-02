@@ -1,6 +1,6 @@
 {
   "run_id": "gh-27",
-  "stage": "REVIEWING",
+  "stage": "DONE",
   "planner_complete": true,
   "coder_complete": true,
   "tester_complete": true,
@@ -32,11 +32,19 @@
       "agent": "tester",
       "note": "tests approved",
       "timestamp": "2026-11-02T18:53:26.968355Z"
+    },
+    {
+      "iteration": 0,
+      "from_stage": "REVIEWING",
+      "to_stage": "DONE",
+      "agent": "reviewer",
+      "note": "tester + reviewer approved",
+      "timestamp": "2026-11-02T18:53:31.128529Z"
     }
   ],
   "branch": "run/gh-27",
   "pr_number": 34,
   "pr_url": "https://github.com/Muthoni-Angie/Agentic/pull/34",
   "created_at": "2026-11-02T18:53:19.866922Z",
-  "updated_at": "2026-11-02T18:53:26.968369Z"
+  "updated_at": "2026-11-02T18:53:31.128543Z"
 }
