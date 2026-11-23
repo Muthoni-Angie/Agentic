@@ -1,0 +1,26 @@
+{
+  "run_id": "gh-30",
+  "stage": "CODING",
+  "planner_complete": true,
+  "coder_complete": true,
+  "tester_complete": false,
+  "reviewer_complete": false,
+  "tester_approved": false,
+  "reviewer_approved": false,
+  "iteration": 0,
+  "history": [
+    {
+      "iteration": 0,
+      "from_stage": "PLANNING",
+      "to_stage": "CODING",
+      "agent": "planner",
+      "note": "",
+      "timestamp": "2026-11-23T20:38:10.211218Z"
+    }
+  ],
+  "branch": "run/gh-30",
+  "pr_number": null,
+  "pr_url": null,
+  "created_at": "2026-11-23T20:38:09.950596Z",
+  "updated_at": "2026-11-23T20:38:10.211254Z"
+}
